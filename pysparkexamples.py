@@ -25,3 +25,31 @@ windowSpec = Window.partitionBy("name").orderBy("timestamp").rangeBetween(-7*24*
 df = df.withColumn("previous_value", lag("value", 1).over(windowSpec))
 
 df.show()
+################
+
+from pyspark.sql import SparkSession
+from pyspark.sql.functions import when, col
+
+# Create a SparkSession
+spark = SparkSession.builder.appName("CapColumn").getOrCreate() 
+
+
+
+# Sample DataFrame
+data = [
+    ("Alice", 10),
+    ("Bob", 20),
+    ("Charlie", 15),
+    ("David", 30),
+    ("Eve", 25)
+]
+
+df = spark.createDataFrame(data, ["name", "value"])
+
+# Cap the 'value' column at 25
+df = df.withColumn("capped_value", when(col("value") > 25, 25).otherwise(col("value")))
+
+df.show()
+
+
+###########
